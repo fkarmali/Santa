@@ -8,6 +8,8 @@ class SantaCallingApp {
         this.conversationHistory = [];
         this.santaVoice = null;
         this.isProcessing = false;
+        this.useTextInput = false;
+        this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
         // UI Elements
         this.callButton = document.getElementById('callButton');
@@ -17,6 +19,13 @@ class SantaCallingApp {
         this.statusIndicator = document.getElementById('statusIndicator');
         this.loadingContainer = document.getElementById('loadingContainer');
         this.santaAvatar = document.getElementById('santaAvatar');
+        this.textInputContainer = document.getElementById('textInputContainer');
+        this.textInput = document.getElementById('textInput');
+        this.sendButton = document.getElementById('sendButton');
+        this.modeToggle = document.getElementById('modeToggle');
+        this.toggleInputMode = document.getElementById('toggleInputMode');
+        this.toggleIcon = document.getElementById('toggleIcon');
+        this.toggleText = document.getElementById('toggleText');
 
         this.init();
     }
@@ -26,7 +35,14 @@ class SantaCallingApp {
         this.initSpeechRecognition();
         this.initTextToSpeech();
         this.setupEventListeners();
-        this.showMessage('info', 'Ready to call Santa! Click the button to start.');
+
+        // Auto-enable text mode on mobile or if speech recognition not available
+        if (this.isMobile || !this.recognition) {
+            this.useTextInput = true;
+            this.updateStatus('Click "Call Santa" to start! (Text mode for mobile)');
+        } else {
+            this.updateStatus('Ready to call Santa! Click the button to start.');
+        }
     }
 
     setupSnowEffect() {
@@ -119,6 +135,49 @@ class SantaCallingApp {
     setupEventListeners() {
         this.callButton.addEventListener('click', () => this.startCall());
         this.hangUpButton.addEventListener('click', () => this.endCall());
+
+        // Text input handlers
+        this.sendButton.addEventListener('click', () => this.handleTextInput());
+        this.textInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                this.handleTextInput();
+            }
+        });
+
+        // Mode toggle handler
+        this.toggleInputMode.addEventListener('click', () => this.toggleMode());
+    }
+
+    toggleMode() {
+        this.useTextInput = !this.useTextInput;
+
+        if (this.useTextInput) {
+            // Switch to text mode
+            this.textInputContainer.classList.remove('hidden');
+            this.toggleIcon.textContent = '🎤';
+            this.toggleText.textContent = 'Use Voice';
+            if (this.isCallActive && this.recognition) {
+                this.recognition.stop();
+            }
+            this.statusIndicator.classList.remove('listening');
+            this.updateStatus('Type your message to Santa');
+        } else {
+            // Switch to voice mode
+            this.textInputContainer.classList.add('hidden');
+            this.toggleIcon.textContent = '⌨️';
+            this.toggleText.textContent = 'Type Instead';
+            if (this.isCallActive) {
+                this.startListening();
+            }
+        }
+    }
+
+    handleTextInput() {
+        const text = this.textInput.value.trim();
+        if (text && !this.isProcessing) {
+            this.handleUserSpeech(text);
+            this.textInput.value = '';
+        }
     }
 
     async startCall() {
@@ -128,14 +187,29 @@ class SantaCallingApp {
         this.messages.innerHTML = '';
         this.conversationHistory = [];
 
+        // Show mode toggle
+        this.modeToggle.classList.remove('hidden');
+
+        // Set up input mode
+        if (this.useTextInput) {
+            this.textInputContainer.classList.remove('hidden');
+            this.toggleIcon.textContent = '🎤';
+            this.toggleText.textContent = 'Use Voice';
+        }
+
         this.statusIndicator.classList.add('speaking');
         this.updateStatus('Connected to North Pole!');
 
         // Santa's greeting
         await this.santaSpeak(this.getGreeting());
 
-        // Start listening
-        this.startListening();
+        // Start listening or show text input
+        if (this.useTextInput) {
+            this.updateStatus('Type your message to Santa');
+            this.textInput.focus();
+        } else {
+            this.startListening();
+        }
     }
 
     endCall() {
@@ -144,6 +218,8 @@ class SantaCallingApp {
 
         this.callButton.classList.remove('hidden');
         this.hangUpButton.classList.add('hidden');
+        this.textInputContainer.classList.add('hidden');
+        this.modeToggle.classList.add('hidden');
         this.statusIndicator.classList.remove('listening', 'speaking');
 
         this.updateStatus('Call ended. Merry Christmas!');
@@ -151,11 +227,21 @@ class SantaCallingApp {
     }
 
     startListening() {
+        if (this.useTextInput) {
+            this.updateStatus('Type your message to Santa');
+            this.textInput.focus();
+            return;
+        }
+
         if (this.recognition) {
             this.recognition.start();
             this.statusIndicator.classList.remove('speaking');
             this.statusIndicator.classList.add('listening');
             this.updateStatus('Santa is listening...');
+        } else {
+            // Fallback to text mode if no recognition
+            this.useTextInput = true;
+            this.toggleMode();
         }
     }
 

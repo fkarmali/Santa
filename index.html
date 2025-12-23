@@ -40,6 +40,18 @@
                 </button>
             </div>
 
+            <div class="text-input-container hidden" id="textInputContainer">
+                <input type="text" id="textInput" placeholder="Type what you want for Christmas..." />
+                <button id="sendButton">Send 📤</button>
+            </div>
+
+            <div class="mode-toggle hidden" id="modeToggle">
+                <button id="toggleInputMode" class="toggle-button">
+                    <span id="toggleIcon">⌨️</span>
+                    <span id="toggleText">Type Instead</span>
+                </button>
+            </div>
+
             <div class="loading-container hidden" id="loadingContainer">
                 <div class="loading-spinner"></div>
                 <p id="loadingText">Connecting to North Pole...</p>
@@ -48,8 +60,9 @@
 
         <div class="info-box">
             <p>🎄 This app works completely offline!</p>
-            <p>🎤 Click "Call Santa" and speak clearly</p>
+            <p>🎤 Use voice OR type your messages (perfect for mobile!)</p>
             <p>⭐ Tell Santa what you want for Christmas</p>
+            <p>📱 Mobile users: Text mode is auto-enabled!</p>
         </div>
     </div>
 
