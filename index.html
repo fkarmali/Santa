@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Call Santa! 🎅</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="snow-container" id="snowContainer"></div>
+
+    <div class="container">
+        <header>
+            <h1>🎅 Call Santa Claus! 🎄</h1>
+            <p class="subtitle">Santa is waiting to hear what you want for Christmas!</p>
+        </header>
+
+        <div class="phone-container">
+            <div class="santa-avatar" id="santaAvatar">
+                <div class="avatar-img">🎅</div>
+                <div class="status-indicator" id="statusIndicator"></div>
+            </div>
+
+            <div class="call-status" id="callStatus">
+                <p>Ready to call Santa</p>
+            </div>
+
+            <div class="conversation-area" id="conversationArea">
+                <div class="messages" id="messages"></div>
+            </div>
+
+            <div class="controls">
+                <button class="call-button" id="callButton">
+                    <span class="button-icon">📞</span>
+                    <span class="button-text">Call Santa</span>
+                </button>
+                <button class="hang-up-button hidden" id="hangUpButton">
+                    <span class="button-icon">❌</span>
+                    <span class="button-text">Hang Up</span>
+                </button>
+            </div>
+
+            <div class="loading-container hidden" id="loadingContainer">
+                <div class="loading-spinner"></div>
+                <p id="loadingText">Connecting to North Pole...</p>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <p>🎄 This app works completely offline!</p>
+            <p>🎤 Click "Call Santa" and speak clearly</p>
+            <p>⭐ Tell Santa what you want for Christmas</p>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
